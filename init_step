@@ -1,0 +1,22 @@
+初始化npm 项目：npm init -y
+安装hardhat:npm install --save-dev hardhat
+编译：npx hardhat compile
+
+启动本地测试链：npx hardhat node
+
+合约部署代码：
+async function main() {
+  const Counter = await ethers.getContractFactory("Counter");
+  const counter = await Counter.deploy();
+
+  await counter.waitForDeployment();
+
+  console.log("Counter deployed to:", await counter.getAddress());
+}
+
+main();
+
+
+部署：npx hardhat run scripts/deploy.js --network localhost
+
+安装环境变量：npm install dotenv
