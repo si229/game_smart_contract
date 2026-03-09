@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 contract Baccarat is ReentrancyGuard {
     bytes32 public resultHash;
@@ -10,6 +10,8 @@ contract Baccarat is ReentrancyGuard {
     uint256 private settlePrizePool;
 
     mapping(address => uint256) private _balances;
+
+    event Deposit(address indexed user, uint256 amount);
 
     constructor(){
         owner = msg.sender;
@@ -27,6 +29,7 @@ contract Baccarat is ReentrancyGuard {
     function deposit() external payable {
         require(msg.value > 0, "Deposit amount must be greater than 0");
         _balances[msg.sender] += msg.value;
+        emit Deposit(msg.sender, msg.value);
     }
 
     function withdraw(uint amount) external nonReentrant {
