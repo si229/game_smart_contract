@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract Baccarat {
+contract Baccarat is ReentrancyGuard {
     bytes32 public resultHash;
     address private owner;
+    
+    uint256 private totalPrizePool;
+    uint256 private settlePrizePool;
 
     mapping(address => uint256) private _balances;
 
@@ -21,31 +25,30 @@ contract Baccarat {
     }
 
     function deposit() external payable {
-        require(shoeIndex < 416, "Shoe exhausted");
+        require(msg.value > 0, "Deposit amount must be greater than 0");
         _balances[msg.sender] += msg.value;
     }
 
-    function withdraw() external payable {
-        _balances[msg.sender] += msg.value;
+    function withdraw(uint amount) external nonReentrant {
+        require(_balances[msg.sender] >= amount);
+
+        _balances[msg.sender] -= amount;
+
+        (bool success,) = msg.sender.call{value: amount}("");
+        require(success);
     }
-        // 示例：只有拥有者才能执行的函数
-    function withdrawFunds() external onlyOwner {
-        // 提现逻辑
+
+    function withdrawPrizePool(uint amount) external onlyOwner {
+        require(amount>0 && totalPrizePool >= amount, "insufficient prize pool");
+        totalPrizePool-=amount;
+        (bool success,) = msg.sender.call{value: amount}("");
+        require(success);
+    }
+
+    function depositPrizePool(uint amount) external onlyOwner {
+        require(amount>0 , "Deposit amount must be greater than 0");
+        totalPrizePool+=amount;
     }
 
 
-    // 从牌靴抽一张牌
-    function draw() external returns (uint8) {
-        require(shoeIndex < 416, "Shoe exhausted");
-
-        // 用 keccak256(seed + index) 生成伪随机数
-        bytes32 rand = keccak256(abi.encodePacked(shoeSeed, shoeIndex));
-
-        // 映射到 52 张牌 (1-52)
-        uint8 card = uint8(uint256(rand) % 52) + 1;
-
-        shoeIndex++;
-
-        return card;
-    }
 }
