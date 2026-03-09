@@ -41,26 +41,25 @@ contract Lottery is Ownable, ReentrancyGuard {
     }
 
 
-        function bet(PlayerBetInfo[] calldata playerBetInfoList) external {
-            for (uint i = 0; i < playerBetInfoList.length; i++) {
-                address player = playerBetInfoList[i].account;
+    function bet(PlayerBetInfo[] calldata playerBetInfoList) external {
+        for (uint i = 0; i < playerBetInfoList.length; i++) {
+            address player = playerBetInfoList[i].account;
 
-                for (uint j = 0; j < playerBetInfoList[i].betInfo.length; j++) {
-                    uint8 zone = playerBetInfoList[i].betInfo[j].zone;
-                    uint16 amount = playerBetInfoList[i].betInfo[j].amount;
+            for (uint j = 0; j < playerBetInfoList[i].betInfo.length; j++) {
+                uint8 zone = playerBetInfoList[i].betInfo[j].zone;
+                uint16 amount = playerBetInfoList[i].betInfo[j].amount;
 
-                    // 余额不足跳过
-                    if (balances[player] < amount) {
-                        continue;
-                    }
-
-                    balances[player] -= amount;
-
-                    // 直接 push struct 到 storage
-                    playerBet[player].push(BetInfo({zone: zone, amount: amount}));
+                // 余额不足跳过
+                if (balances[player] < amount) {
+                    continue;
                 }
+
+                balances[player] -= amount;
+
+                playerBet[player].push(BetInfo({zone: zone, amount: amount}));
             }
         }
+    }
 
 
     /// 管理员结算奖池给指定玩家
