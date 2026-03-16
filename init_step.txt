@@ -2,8 +2,16 @@
 安装hardhat:npm install --save-dev hardhat
 编译：npx hardhat compile
 
-启动本地测试链：npx hardhat node
+1.启动本地测试链：npx hardhat node
+2.打开一个新的终端，在localhost网络中部署智能合约
+npx hardhat run --network localhost scripts/deploy.js
 
+npm install --save-dev @nomiclabs/hardhat-ethers 
+npm install --save-dev ethers 
+npm install --save-dev @openzeppelin/contracts
+npm install --save-dev chai mocha
+npm install --save-dev @nomicfoundation/hardhat-toolbox-viem
+npm install @openzeppelin/contracts
 合约部署代码：
 async function main() {
   const Counter = await ethers.getContractFactory("Counter");
